@@ -49,44 +49,108 @@ const addTo = () => {
 		},
 	]).then(({ addChoice }) => {
 		switch (addChoice) {
-         case "Add departments":
-			 addDepartments();
-			 break;
-		case "Add role":
-			addRole();
-			break;
-		case "Add Employee":
-			addEmployee();
-			break;
+			case "Add departments":
+				addDepartments();
+				break;
+			case "Add role":
+				addRole();
+				break;
+			case "Add Employee":
+				addEmployee();
+				break;
 		}
 
 	});
 }
-const addDepartments = ()=>{
+const addDepartments = () => {
 	inquirer.prompt([
 		{
 			name: "departmentName",
 			type: "input",
 			message: "Enter the name of the department you would like to add:"
 		},
-	])}
+	]).then(postDepartment => {
+		connection.query("INSERT INTO department(name) VALUES(?)", [postDepartment.departmentName], function (err, postData) {
+			if (err)
+				throw err;
 
-const addRole = ()=>{
-	inquirer.prompt([
-		{
-			name: "roleName",
-			type: "input",
-			message: "Enter the name of the department you would like to add:"
-		},
-	])}
+			// console.log(postData.insertId);
+			console.log("department has successfully been created!");
+
+			displayCO();
+		});
+	});
+}
+
+const addRole = () => {
+	// let object = {};
+	// let departmentEmpty = [];
+	connection.query('SELECT department.name ,department.id FROM department', function (err, res) {
+		if (err)
+			throw err;
+			console.log(res)
+		  let departmentID = res
+	// 	for (i = 0; i < res.length; i++) {
+	// 		object[i] = { id: res[i].id, name: res[i].departmentName }
+	// 		departmentEmpty.push(object[i]);
+	// 	};
+
+		inquirer.prompt([
+			{
+				name: "title",
+				type: "input",
+				message: "Enter the title of the role you would like to add:"
+			},
+			{
+				name: "salary",
+				type: "input",
+				//this is a joke
+				message: "How much does this roll make before tax:"
+			},
+			{
+				name: "roleDepartment",
+				type: "list",
+				choices:departmentID,
+				message: "Select the department for this role:"
+			},
+		]).then(postRole => {
+			// let departmentID = "";
+			// for(i =0;i<departmentEmpty.length;i++){
+			// 	if(postRole.roleDepartment == departmentEmpty[i].name){
+			// 		departmentID = departmentEmpty[i].id;
+			// 	}
+			// }
+			connection.query("INSERT INTO role(title, salary, department_id) VALUES(?,?)", [postRole.title,postRole.salary,postRole.departmentID], function (err, postData) {
+				if (err)
+					throw err;
+
+				// console.log(postData.insertId);
+				console.log("Product has successfully been created!");
+				//displays options from beginning after action is done
+				displayCO();
+			});
+		});
+	});
+};
 
 
-const addEmployee = ()=>{
+const addEmployee = () => {
 	inquirer.prompt([
 		{
 			name: "employeeName",
 			type: "input",
 			message: "Enter the name of the department you would like to add:"
 		},
-	])}
+	]).then(postDepartment => {
+		connection.query("INSERT INTO department(name) VALUES(?)", [postDepartment.departmentName], function (err, postData) {
+			if (err)
+				throw err;
+
+			// console.log(postData.insertId);
+			console.log("Product has successfully been created!");
+
+			displayMenu();
+		});
+	});
+}
 

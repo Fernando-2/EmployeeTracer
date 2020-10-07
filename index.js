@@ -1,7 +1,9 @@
 require('dotenv').config();
 const inquirer = require("inquirer");
-const ListPrompt = require('inquirer/lib/prompts/list');
+//don't know what this code was doing
+// const ListPrompt = require('inquirer/lib/prompts/list');
 const mysql = require("mysql");
+const consoleTable = require("console.table");
 
 const connection = mysql.createConnection({
 	host: "localhost",
@@ -190,27 +192,22 @@ const viewEmployees = () => {
 	  if (err) throw err;
 	  // Log all results of the SELECT statement
 	  console.table(res);
-	  console.log("");
-	  beginQuestions();
+	  displayCO();
 	});
   }
   
   const viewDepartments = () => {
 	connection.query("SELECT * FROM department", function (err, res) {
 	  if (err) throw err;
-	  // Log all results of the SELECT statement
 	  console.table(res);
-	  console.log("");
-	  beginQuestions();
+	  displayCO();
 	});
   }
   
   const viewRoles = () => {
-	connection.query("SELECT * FROM roles", function (err, res) {
+	connection.query("SELECT * FROM role", function (err, res) {
 	  if (err) throw err;
-	  // Log all results of the SELECT statement
 	  console.table(res);
-	  console.log("");
-	  beginQuestions();
+	  displayCO();
 	});
   }

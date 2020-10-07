@@ -104,14 +104,18 @@ const addRole = () => {
 		  name: "department",
 		  message: "What department will this role be in?",
 		  choices: () => {
+			  //creates empty array
 			let departmentArray = [];
+			//loops through all department names pushes them to array and adds | in between name and id
 			for (let i = 0; i < res.length; i++) {
 			  departmentArray.push(res[i].name + " | " + res[i].id);
 			}
+			//returns array everything in array as a choice
 			return departmentArray;
 		  }
 		}
 	  ]).then((postRole) => {
+		  //creates a let variable 
 		let deptID = postRole.department.split("|")[1];
   
 		connection.query(
@@ -128,22 +132,63 @@ const addRole = () => {
 
 
 const addEmployee = () => {
-	inquirer.prompt([
-		{
-			name: "employeeName",
+	connection.query("SELECT * FROM roles", (err, res) => {
+		if (err) throw err
+	
+		return inquirer.prompt([
+	
+		  {
 			type: "input",
-			message: "Enter the name of the department you would like to add:"
-		},
-	]).then(postDepartment => {
-		connection.query("INSERT INTO department(name) VALUES(?)", [postDepartment.departmentName], function (err, postData) {
-			if (err)
-				throw err;
-
-			// console.log(postData.insertId);
-			console.log("Product has successfully been created!");
-
-			displayMenu();
-		});
-	});
-}
-
+			name: "firstName",
+			message: "Please enter the employee's first name:",
+	
+		  },
+		  {
+			type: "input",
+			name: "lastName",
+			message: "Please enter the employee's last name:"
+		  },
+		  {
+			type: "list",
+			name: "role",
+			message: "What role is this employee filling?",
+			choices: () => {
+			  let roleArray = [];
+			  for (let i = 0; i < res.length; i++) {
+				roleArray.push(res[i].title + " | " + res[i].id);
+			  }
+			  return roleArray;
+			}
+		  }
+		]).then((answer) => {
+		  let roleID = answer.role.split("|")[1];
+		  connection.query("SELECT * FROM employee", (err, res) => {
+			inquirer.prompt([
+			  {
+				type: "list",
+				name: "manager",
+				message: "Who will this employee report to?",
+				choices: () => {
+				  let managerArray = [];
+				  for (let i = 0; i < res.length; i++) {
+					managerArray.push(res[i].first_name + res[i].last_name + " | " + res[i].id);
+				  }
+				  console.log()
+				  return managerArray;
+				}
+			  }
+	
+			]).then((choice) => {
+			  let managerID = choice.manager.split("|")[1];
+			  connection.query(`INSERT into employee (first_name, last_name, role_id, manager_id) VALUES ("${answer.firstName}", "${answer.lastName}", ${roleID}, ${managerID}) `, (err, res) => {
+				if (err) throw err;
+				// Log all results of the SELECT statement
+				console.log(`${answer.firstName} ${answer.lastName}  has been added to the team! Welcome Aboard!`);
+			  })
+			  console.log("");
+			  beginQuestions();
+			})
+		  })
+		})
+	  })
+	}

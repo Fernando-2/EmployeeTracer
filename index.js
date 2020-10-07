@@ -22,7 +22,7 @@ const displayCO = () => {
 		{
 			name: "companyChoice",
 			type: "list",
-			choices: ["Add departments, roles, employees", "View departments, roles, employees", "Update employee roles"],
+			choices: ["Add departments","Add role","Add Employee", "View departments", "View roles", "View employees", "Update employee roles"],
 			message: "What would you like to do:"
 		}
 	]).then(({ companyChoice }) => {
@@ -36,8 +36,14 @@ const displayCO = () => {
 			case "Add Employee":
 				addEmployee();
 				break;
-			case "View departments, roles, employees":
-				viewEmployee();
+			case "View departments":
+				viewDepartments();
+				break;
+			case "View roles":
+				viewRoles();
+				break;
+			case "View employees":
+				viewEmployees();
 				break;
 			case "Update employee roles":
 				updateEmployee();
@@ -103,21 +109,21 @@ const addRole = () => {
 				}
 			}
 		]).then((postRole) => {
-			//creates a let variable 
+			//creates a let variable with the department id inside of alongside the id number 
 			let deptID = postRole.department.split("|")[1];
 
 			connection.query(
 				"INSERT INTO role(title, salary, department_id) VALUES (?,?,?)", [postRole.title, postRole.salary, deptID], function (err, postData) {
 					if (err) throw err;
 					console.log("role added successfully");
-					// Returns to the first screen to select options
+					
 					displayCO();
 				}
 			)
 		})
 	})
 }
-
+//dont know why it didnt work when i called it from the previous addto function
 const addEmployee = () => {
 	connection.query("SELECT * FROM role", (err, res) => {
 		if (err) throw err
@@ -179,4 +185,32 @@ const addEmployee = () => {
 		})
 	})
 }
-
+const viewEmployees = () => {
+	connection.query("SELECT * FROM employee", function (err, res) {
+	  if (err) throw err;
+	  // Log all results of the SELECT statement
+	  console.table(res);
+	  console.log("");
+	  beginQuestions();
+	});
+  }
+  
+  const viewDepartments = () => {
+	connection.query("SELECT * FROM department", function (err, res) {
+	  if (err) throw err;
+	  // Log all results of the SELECT statement
+	  console.table(res);
+	  console.log("");
+	  beginQuestions();
+	});
+  }
+  
+  const viewRoles = () => {
+	connection.query("SELECT * FROM roles", function (err, res) {
+	  if (err) throw err;
+	  // Log all results of the SELECT statement
+	  console.table(res);
+	  console.log("");
+	  beginQuestions();
+	});
+  }

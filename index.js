@@ -1,7 +1,5 @@
 require('dotenv').config();
 const inquirer = require("inquirer");
-//don't know what this code was doing
-// const ListPrompt = require('inquirer/lib/prompts/list');
 const mysql = require("mysql");
 const consoleTable = require("console.table");
 
@@ -178,7 +176,7 @@ const addEmployee = () => {
 					connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${employee.firstName}", "${employee.lastName}", ${roleID}, ${managerID}) `, (err, res) => {
 						if (err) throw err;
 						// Log all results of the SELECT statement
-						console.log(`${employee.firstName} ${employee.lastName}  has been added to the team! Welcome Aboard!`);
+						console.log(`${employee.firstName} ${employee.lastName}  has been hired`);
 					})
 					console.log("");
 					displayCO();

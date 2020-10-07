@@ -81,57 +81,50 @@ const addDepartments = () => {
 		});
 	});
 }
-
 const addRole = () => {
-	// let object = {};
-	// let departmentEmpty = [];
-	connection.query('SELECT department.name ,department.id FROM department', function (err, res) {
-		if (err)
-			throw err;
-			console.log(res)
-		  let departmentID = res
-	// 	for (i = 0; i < res.length; i++) {
-	// 		object[i] = { id: res[i].id, name: res[i].departmentName }
-	// 		departmentEmpty.push(object[i]);
-	// 	};
-
-		inquirer.prompt([
-			{
-				name: "title",
-				type: "input",
-				message: "Enter the title of the role you would like to add:"
-			},
-			{
-				name: "salary",
-				type: "input",
-				//this is a joke
-				message: "How much does this roll make before tax:"
-			},
-			{
-				name: "roleDepartment",
-				type: "list",
-				choices:departmentID,
-				message: "Select the department for this role:"
-			},
-		]).then(postRole => {
-			// let departmentID = "";
-			// for(i =0;i<departmentEmpty.length;i++){
-			// 	if(postRole.roleDepartment == departmentEmpty[i].name){
-			// 		departmentID = departmentEmpty[i].id;
-			// 	}
-			// }
-			connection.query("INSERT INTO role(title, salary, department_id) VALUES(?,?)", [postRole.title,postRole.salary,postRole.departmentID], function (err, postData) {
-				if (err)
-					throw err;
-
-				// console.log(postData.insertId);
-				console.log("Product has successfully been created!");
-				//displays options from beginning after action is done
-				displayCO();
-			});
-		});
-	});
-};
+	connection.query("SELECT * FROM department", function (err, res) {
+	  if (err) throw err
+  
+	  return inquirer.prompt([
+  
+		{
+		  type: "input",
+		  name: "title",
+		  message: "Enter the title of the role you would like to add:",
+  
+		},
+		{
+		  type: "input",
+		  name: "salary",
+		  //this is a joke
+		  message: "How much does this roll make before tax:"
+		},
+		{
+		  type: "list",
+		  name: "department",
+		  message: "What department will this role be in?",
+		  choices: () => {
+			let departmentArray = [];
+			for (let i = 0; i < res.length; i++) {
+			  departmentArray.push(res[i].name + " | " + res[i].id);
+			}
+			return departmentArray;
+		  }
+		}
+	  ]).then((postRole) => {
+		let deptID = postRole.department.split("|")[1];
+  
+		connection.query(
+			"INSERT INTO role(title, salary, department_id) VALUES (?,?,?)",[postRole.title,postRole.salary,deptID], function (err, postData) {
+			if (err) throw err;
+			console.log("role added successfully");
+			// Returns to the first screen to select options
+			displayCO();
+		  }
+		)
+	  })
+	})
+  }
 
 
 const addEmployee = () => {
